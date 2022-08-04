@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Kakcho Task</string>
+    <string name="paid_logo">Paid Logo</string>
+    <string name="download_img_cont_desc">Download Button</string>
+    <string name="icon_image_cont_dec">Icon</string>
+    <string name="search">Search</string>
+</resources>
