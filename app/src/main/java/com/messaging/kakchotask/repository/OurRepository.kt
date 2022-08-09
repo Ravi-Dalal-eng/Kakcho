@@ -1,17 +1,16 @@
 package com.messaging.kakchotask.repository
 
 import androidx.lifecycle.MutableLiveData
-import com.messaging.kakchotask.BuildConfig
-import com.messaging.kakchotask.R
 import com.messaging.kakchotask.model.Icon
-import com.messaging.kakchotask.model.OurApiResponse
 import com.messaging.kakchotask.utils.*
+import com.messaging.kakchotask.utils.RetrofitHelper.Companion.getInstance
 import com.messaging.kakchotask.utils.RetrofitHelper.Companion.isLoading
-import com.messaging.kakchotask.utils.RetrofitHelper.Companion.retrofitClient
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+
 import kotlinx.coroutines.launch
-import retrofit2.Response
+
 
 object Repository {
 
@@ -19,12 +18,13 @@ object Repository {
 
     fun getIcons(query: String, count: Int, index: Int): MutableLiveData<List<Icon>> {
         isLoading = true
-        val job = CoroutineScope(Dispatchers.IO).launch {
-            val request: Response<OurApiResponse> = retrofitClient.getIcons(params(query, count, index))
+        CoroutineScope(Dispatchers.IO).launch {
+        val ourService=getInstance().create(OurService::class.java)
+        val ourResult=ourService.getIcons(params(query, count, index))
 
-            if (request.isSuccessful) {
+            if (ourResult.isSuccessful) {
                 isLoading = false
-                iconsLiveData.postValue(request.body()?.icons)
+                iconsLiveData.postValue(ourResult.body()?.icons)
             } else {
                 isLoading = false
             }

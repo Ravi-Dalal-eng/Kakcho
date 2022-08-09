@@ -1,12 +1,14 @@
 package com.messaging.kakchotask
 
-import android.content.Intent
+
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -16,7 +18,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.messaging.kakchotask.adapters.IconListAdapter
 import com.messaging.kakchotask.model.Icon
-import com.messaging.kakchotask.utils.DownloadService
 import com.messaging.kakchotask.utils.NUMBER_OF_ICONS
 import com.messaging.kakchotask.utils.QUERY
 import com.messaging.kakchotask.utils.RetrofitHelper.Companion.isLoading
@@ -136,21 +137,20 @@ class MainActivity : AppCompatActivity() {
                     removeAndReload()
                     viewModel.getIcons(defaultQuery, NUMBER_OF_ICONS, 0)
                 }
+
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 return true
             }
 
         })
 
-        // To handle when search query is submitted
-        // been used to search the query as the user types. For now search is only made
-        // when user submits using search button on keyboard
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query == null) return false
-
-                removeAndReload()
-                this@MainActivity.query = query
-                viewModel.getIcons(query, NUMBER_OF_ICONS, 0)
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 return true
             }
 
@@ -182,15 +182,9 @@ class MainActivity : AppCompatActivity() {
         else progress_bar.visibility = View.INVISIBLE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val intent = Intent(this, DownloadService::class.java)
-        stopService(intent)
-    }
 
     companion object {
         private val listItems = mutableListOf<Icon>()
-    // Could be made non-static and be preserved
-        // with onSaveInstanceState()
+    
     }
 }
